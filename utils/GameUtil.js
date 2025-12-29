@@ -65,6 +65,6 @@ export class GameUtil {
     const accuracy = ((totalCharacterChecked - totalWrongCharacter) / totalCharacterChecked) * 100;
     const roundedAccuracy = Math.round(accuracy);
 
-    return roundedAccuracy;
+    return Number.isNaN(roundedAccuracy) ? 0 : roundedAccuracy;
   }
 }

@@ -321,3 +321,27 @@ console.info('\n=========================================== GameUtil.countAccura
     console.info(`Test GameUtil.countAccuracy should return correct accuracy when submitted text is wrong: Failed`);
   }
 })();
+
+(() => {
+  // Test GameUtil.countAccuracy should not return NaN
+  try {
+    // Given
+    const characterChecked = {
+      totalCharacterChecked: 0,
+      totalCorrectCharacter: 0,
+      totalWrongCharacter: 0
+    };
+
+    const expectedAccuracy = 0;
+
+    // When
+    const result = GameUtil.countAccuracy(characterChecked);
+
+    // Then
+    assert.strictEqual(result, expectedAccuracy);
+    console.info(`Test GameUtil.countAccuracy should not return NaN: Passed`);
+  } catch (error) {
+    console.error(error);
+    console.info(`Test GameUtil.countAccuracy should not return NaN: Failed`);
+  }
+})();
