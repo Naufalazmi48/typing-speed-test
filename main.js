@@ -89,11 +89,21 @@ function onTimerUpdateListener(time) {
   document.getElementById('timer-text').textContent = time;
 }
 
+function onWPMUpdateListener(wpm) {
+  document.getElementById('wpm-text').textContent = wpm;
+}
+
+function onAccuracyUpdateListener(accuracy) {
+  document.getElementById('accuracy-text').textContent = `${accuracy}%`;
+}
+
 game.setOnGameStartListener(onStartGameListener);
 game.setOnGameRestartListener(onRestartGameListener);
 game.setOnEndGameListener(onEndGameListener);
 game.setOnTypingLetterListener(onTypingLetterListener);
 game.setOnTimerUpdateListener(onTimerUpdateListener);
+game.setOnWPMUpdateListener(onWPMUpdateListener);
+game.setOnAccuracyUpdateListener(onAccuracyUpdateListener);
 
 document.getElementById('start-button').addEventListener('click', () => { game.setGameStatus(GAME_STATUS.START) });
 document.getElementById('restart-button').addEventListener('click', () => { game.setGameStatus(GAME_STATUS.RESTART) });

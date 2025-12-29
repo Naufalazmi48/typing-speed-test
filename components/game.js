@@ -1,5 +1,6 @@
 import { GAME_STATUS } from '../constants/game-status.js';
 import { GAME_MODE_OPTION } from '../constants/game-setting.js';
+import { GameUtil } from '../utils/GameUtil.js';
 import data from '../data.json' with { type: 'json' };
 
 export class Game {
@@ -45,6 +46,20 @@ export class Game {
     this.modeId = modeId;
   }
 
+  setWPM(wpm) {
+    this.wpm = wpm;
+    if (this.onWPMUpdateListener) {
+      this.onWPMUpdateListener(wpm);
+    }
+  }
+
+  setAccuracy(accuracy) {
+    this.accuracy = accuracy;
+    if (this.onAccuracyUpdateListener) {
+      this.onAccuracyUpdateListener(accuracy);
+    }
+  }
+
   setOnGameStartListener(listener) {
     this.onGameStartListener = listener;
   }
@@ -65,8 +80,16 @@ export class Game {
     this.onTimerUpdateListener = listener;
   }
 
+  setOnWPMUpdateListener(listener) {
+    this.onWPMUpdateListener = listener;
+  }
+
+  setOnAccuracyUpdateListener(listener) {
+    this.onAccuracyUpdateListener = listener;
+  }
+
   setGameStatus(status) {
-    this.gameIsStarted = status;
+    this.status = status;
 
     switch (status) {
       case GAME_STATUS.START:
@@ -81,6 +104,7 @@ export class Game {
         break;
       case GAME_STATUS.END:
         this._stopTimer();
+        this._updateScore();
         this.onEndGameListener();
         break;
     }
@@ -97,11 +121,31 @@ export class Game {
   }
 
   // ==================================== Method ======================================
+  _updateWPMScore() {
+    const { totalCorrectWord } = GameUtil.countCorrectWord({ challengeText: this.challengeText, submittedText: this.submissionText });
+    const wpm = GameUtil.countWPM({ totalCorrectWord, timeInSecond: this.timerInSecond });
+    this.setWPM(wpm);
+  };
+
+  _updateAccuracyScore() {
+    const { totalCharacterChecked, totalWrongCharacter } = GameUtil.countCharacterChecked({ challengeText: this.challengeText, submittedText: this.submissionText });
+    const accuracy = GameUtil.countAccuracy({ totalCharacterChecked, totalWrongCharacter });
+    this.setAccuracy(accuracy);
+  };
+
+  _updateScore() {
+    if (this.timerInSecond >= 60 || this.status === GAME_STATUS.END) {
+      this._updateWPMScore();
+    }
+    this._updateAccuracyScore();
+  }
+
   _resetGame() {
+    this._stopTimer();
     this.submissionText = '';
     this.indexChecker = 0;
-    this.wpm = 0;
-    this._stopTimer();
+    this.setWPM(0);
+    this.setAccuracy(0);
     this.setTimerInSecond(0);
   }
 
@@ -134,10 +178,9 @@ export class Game {
 
     const isCorrectLetter = this.challengeText.charAt(this.indexChecker) === letter;
 
-    if (this.onTypingLetterListener) {
-      this.onTypingLetterListener(isCorrectLetter, this.indexChecker);
-    }
+    if (this.onTypingLetterListener) this.onTypingLetterListener(isCorrectLetter, this.indexChecker);
 
+    this._updateScore();
     const isFinished = this.submissionText.length === this.challengeText.length;
     if (isFinished) {
       this.setGameStatus(GAME_STATUS.END);
