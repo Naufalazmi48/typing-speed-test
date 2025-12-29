@@ -26,7 +26,7 @@ modeSetting.setOnChangedOptionListener(onModeChangedListener);
 difficultySetting.render();
 modeSetting.render();
 
-function renderChallengeText(text) {
+function onChallengeTextUpdateListener(text) {
   const mainText = document.getElementById('main-content-text-container');
   mainText.innerHTML = '';
 
@@ -55,9 +55,8 @@ const onKeyDownListener = (event) => {
   }
 }
 
-function onStartGameListener(text) {
+function onStartGameListener() {
   updateSettingGameUI({ isGameStarted: true });
-  renderChallengeText(text);
   document.addEventListener('keydown', onKeyDownListener);
 }
 
@@ -104,6 +103,7 @@ game.setOnTypingLetterListener(onTypingLetterListener);
 game.setOnTimerUpdateListener(onTimerUpdateListener);
 game.setOnWPMUpdateListener(onWPMUpdateListener);
 game.setOnAccuracyUpdateListener(onAccuracyUpdateListener);
+game.setOnChallengeTextUpdateListener(onChallengeTextUpdateListener);
 
 document.getElementById('start-button').addEventListener('click', () => { game.setGameStatus(GAME_STATUS.START) });
 document.getElementById('restart-button').addEventListener('click', () => { game.setGameStatus(GAME_STATUS.RESTART) });

@@ -60,6 +60,13 @@ export class Game {
     }
   }
 
+  setChallengeText(challengeText) {
+    this.challengeText = challengeText;
+    if (this.onChallengeTextUpdateListener) {
+      this.onChallengeTextUpdateListener(challengeText);
+    }
+  }
+
   setOnGameStartListener(listener) {
     this.onGameStartListener = listener;
   }
@@ -88,18 +95,23 @@ export class Game {
     this.onAccuracyUpdateListener = listener;
   }
 
+  setOnChallengeTextUpdateListener(listener) {
+    this.onChallengeTextUpdateListener = listener;
+  }
+
   setGameStatus(status) {
     this.status = status;
 
     switch (status) {
       case GAME_STATUS.START:
         this._resetGame();
-        this.challengeText = this._getChallengeText();
-        this.onGameStartListener(this.challengeText);
+        this.setChallengeText(this._getChallengeText());
+        this.onGameStartListener();
         this._startTimer();
         break;
       case GAME_STATUS.RESTART:
         this._resetGame();
+        this.setChallengeText(this._getChallengeText());
         this.onGameRestartListener();
         break;
       case GAME_STATUS.END:
